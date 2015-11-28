@@ -20,11 +20,18 @@ var Game = React.createClass({
 		}
 	},
 	componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-		var winner = this.getWinningPlayer(this.state);
-		var prevWinner = this.getWinningPlayer(prevState);
+		var winner = this.getWinningPlayer(this.state.table);
+		var prevWinner = this.getWinningPlayer(prevState.table);
 
 		if (winner && prevWinner !== winner) {
 			this.props.endGame(winner);
+		} else {
+			var tableFull = this.isTableFull(this.state.table);
+			var prevTableFull = this.isTableFull(prevState.table);
+
+			if (tableFull && prevTableFull !== tableFull) {
+				this.props.endGame(null);
+			}
 		}
 	},
 	placeMark: function placeMark(rowIndex, cellIndex) {
@@ -56,10 +63,10 @@ var Game = React.createClass({
 			this.setState({ highlighted: [rowIndex, cellIndex] });
 		}
 	},
-	getWinningPlayer: function getWinningPlayer(state) {
+	getWinningPlayer: function getWinningPlayer(table) {
 		var checkPlayer = function checkPlayer(player) {
 			var checkRows = function checkRows() {
-				return _.some(state.table, function (row) {
+				return _.some(table, function (row) {
 					return _.every(row, function (cell) {
 						return cell === player;
 					});
@@ -67,16 +74,16 @@ var Game = React.createClass({
 			};
 			var checkCols = function checkCols() {
 				return _.some(_.range(0, 3), function (col) {
-					return _.every(state.table, function (row) {
+					return _.every(table, function (row) {
 						return row[col] === player;
 					});
 				});
 			};
 			var checkDiagonals = function checkDiagonals() {
 				return _.every(_.range(0, 3), function (index) {
-					return state.table[index][index] === player;
+					return table[index][index] === player;
 				}) || _.every(_.range(0, 3), function (index) {
-					return state.table[index][2 - index] === player;
+					return table[index][2 - index] === player;
 				});
 			};
 
@@ -90,6 +97,13 @@ var Game = React.createClass({
 			return "O";
 		}
 		return undefined;
+	},
+	isTableFull: function isTableFull(table) {
+		return _.all(table, function (row) {
+			return _.all(row, function (cell) {
+				return cell !== null;
+			});
+		});
 	},
 	render: function render() {
 		var _this = this;

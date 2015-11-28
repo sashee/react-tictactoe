@@ -20,11 +20,18 @@ const Game = React.createClass({
 		}
 	},
 	componentDidUpdate(prevProps, prevState) {
-		const winner = this.getWinningPlayer(this.state);
-		const prevWinner = this.getWinningPlayer(prevState);
+		const winner = this.getWinningPlayer(this.state.table);
+		const prevWinner = this.getWinningPlayer(prevState.table);
 
 		if (winner && prevWinner !== winner) {
 			this.props.endGame(winner);
+		}else {
+			const tableFull = this.isTableFull(this.state.table);
+			const prevTableFull = this.isTableFull(prevState.table);
+
+			if (tableFull && prevTableFull !== tableFull) {
+				this.props.endGame(null);
+			}
 		}
 	},
 	placeMark(rowIndex, cellIndex) {
@@ -56,10 +63,10 @@ const Game = React.createClass({
 			this.setState({highlighted: [rowIndex, cellIndex]});
 		}
 	},
-	getWinningPlayer(state) {
+	getWinningPlayer(table) {
 		const checkPlayer = (player) => {
 			const checkRows = () => {
-				return _.some(state.table, (row) => {
+				return _.some(table, (row) => {
 					return _.every(row, (cell) => {
 						return cell === player;
 					});
@@ -67,17 +74,17 @@ const Game = React.createClass({
 			};
 			const checkCols = () => {
 				return _.some(_.range(0, 3), (col) => {
-					return _.every(state.table, (row) => {
+					return _.every(table, (row) => {
 						return row[col] === player;
 					});
 				});
 			};
 			const checkDiagonals = () => {
 				return _.every(_.range(0, 3), (index) => {
-					return state.table[index][index] === player;
+					return table[index][index] === player;
 				}) ||
 				_.every(_.range(0, 3), (index) => {
-					return state.table[index][2 - index] === player;
+					return table[index][2 - index] === player;
 				});
 			};
 
@@ -91,6 +98,13 @@ const Game = React.createClass({
 			return "O";
 		}
 		return undefined;
+	},
+	isTableFull(table) {
+		return _.all(table, (row) => {
+			return _.all(row, (cell) => {
+				return cell !== null;
+			});
+		});
 	},
 	render() {
 		return (
