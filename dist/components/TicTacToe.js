@@ -4,7 +4,8 @@ var TicTacToe = React.createClass({
 	displayName: "TicTacToe",
 	getInitialState: function getInitialState() {
 		return {
-			gameStarted: false
+			gameStarted: true,
+			crossTurn: true
 		};
 	},
 	startGame: function startGame() {
