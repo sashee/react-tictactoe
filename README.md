@@ -1,6 +1,6 @@
 # react-tictactoe
 
-This is a demonstration code for a blog post.
+This is a demonstration code for a blog post: [https://advancedweb.hu/2015/12/08/react_basics/](https://advancedweb.hu/2015/12/08/react_basics/).
 
 It covers some basic concepts of the React framework.
 
